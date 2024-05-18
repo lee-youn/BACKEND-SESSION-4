@@ -4,6 +4,7 @@ from .serializers import PollRequestSerializer, PollSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
+from decimal import Decimal, DivisionByZero
 
 # Create your views here.
 
@@ -68,10 +69,17 @@ def poll_agree(request, id):
 
     # 찬성 표율 다시 계산
     total_votes = poll.agree + poll.disagree
-    if total_votes > 0:
-        poll.agreeRate = (poll.agree / total_votes) * 100
-    else:
-        poll.agreeRate = 0
+    
+    try:
+        if total_votes > 0:
+            poll.agreeRate = float((Decimal(poll.agree) / Decimal(total_votes)))
+            poll.disagreeRate = float((Decimal(poll.disagree) / Decimal(total_votes)))
+        else:
+            poll.agreeRate = Decimal(0)
+            poll.disagreeRate = Decimal(0)
+    except DivisionByZero:
+        poll.agreeRate = Decimal(0)
+        poll.disagreeRate = Decimal(0)
     poll.save()
     
     serializer = PollSerializer(poll)
@@ -85,10 +93,17 @@ def poll_disagree(request, id):
 
     # 반대 표율 다시 계산
     total_votes = poll.agree + poll.disagree
-    if total_votes > 0:
-        poll.disagreeRate = (poll.disagree / total_votes) * 100
-    else:
-        poll.disagreeRate = 0
+    
+    try:
+        if total_votes > 0:
+            poll.agreeRate = float((Decimal(poll.agree) / Decimal(total_votes)))
+            poll.disagreeRate = float((Decimal(poll.disagree) / Decimal(total_votes)))
+        else:
+            poll.agreeRate = Decimal(0)
+            poll.disagreeRate = Decimal(0)
+    except DivisionByZero:
+        poll.agreeRate = Decimal(0)
+        poll.disagreeRate = Decimal(0)
     poll.save()
     
     serializer = PollSerializer(poll)

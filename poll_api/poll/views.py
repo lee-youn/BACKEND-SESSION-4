@@ -99,8 +99,8 @@ def poll_agree(request, id):
     
     try:
         if total_votes > 0:
-            poll.agreeRate = (Decimal(poll.agree) / Decimal(total_votes)) * Decimal(100)
-            poll.disagreeRate = (Decimal(poll.disagree) / Decimal(total_votes)) * Decimal(100)
+            poll.agreeRate = (Decimal(poll.agree) / Decimal(total_votes))
+            poll.disagreeRate = (Decimal(poll.disagree) / Decimal(total_votes))
         else:
             poll.agreeRate = Decimal(0)
             poll.disagreeRate = Decimal(0)
@@ -132,8 +132,8 @@ def poll_disagree(request, id):
     
     try:
         if total_votes > 0:
-            poll.agreeRate = (Decimal(poll.agree) / Decimal(total_votes)) * Decimal(100)
-            poll.disagreeRate = (Decimal(poll.disagree) / Decimal(total_votes)) * Decimal(100)
+            poll.agreeRate = (Decimal(poll.agree) / Decimal(total_votes)) 
+            poll.disagreeRate = (Decimal(poll.disagree) / Decimal(total_votes))
         else:
             poll.agreeRate = Decimal(0)
             poll.disagreeRate = Decimal(0)

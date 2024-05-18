@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
+from decimal import Decimal, InvalidOperation
 
 
 class PollViewSet(viewsets.ViewSet):
@@ -60,7 +61,9 @@ class PollViewSet(viewsets.ViewSet):
             poll.delete()
             return Response(status = status.HTTP_204_NO_CONTENT)
         
-        @action(detail=True, methods=['post'])
+
+
+        @action(detail=True, methods=['post'], url_path='agree')
         def agree(self, request, pk=None):
             poll = Poll.objects.get(pk=pk)
             poll.agree += 1
@@ -68,14 +71,20 @@ class PollViewSet(viewsets.ViewSet):
             # 찬성 표율 다시 계산
             total_votes = poll.agree + poll.disagree
             if total_votes > 0:
-                poll.agreeRate = (poll.agree / total_votes) * 100
+                try:
+                    poll.agreeRate = (Decimal(poll.agree) / Decimal(total_votes))
+                    poll.disagreeRate = (Decimal(poll.disagree) / Decimal(total_votes))
+                except InvalidOperation:
+                    poll.agreeRate = Decimal(0)
+                    poll.disagreeRate = Decimal(0)
             else:
-                poll.agreeRate = 0
+                poll.agreeRate = Decimal(0)
+                poll.disagreeRate = Decimal(0)
             poll.save()
             serializer = PollSerializer(poll)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-        @action(detail=True, methods=['post'])
+        @action(detail=True, methods=['post'], url_path='disagree')
         def disagree(self, request, pk=None):
             poll = Poll.objects.get(pk=pk)
             poll.disagree += 1
@@ -83,9 +92,15 @@ class PollViewSet(viewsets.ViewSet):
             # 반대 표율 다시 계산
             total_votes = poll.agree + poll.disagree
             if total_votes > 0:
-                poll.disagreeRate = (poll.disagree / total_votes) * 100
+                try:
+                    poll.disagreeRate = (Decimal(poll.disagree) / Decimal(total_votes))
+                    poll.agreeRate = (Decimal(poll.agree) / Decimal(total_votes))
+                except InvalidOperation:
+                    poll.agreeRate = Decimal(0)
+                    poll.disagreeRate = Decimal(0)
             else:
-                poll.disagreeRate = 0
+                poll.agreeRate = Decimal(0)
+                poll.disagreeRate = Decimal(0)
             poll.save()
             serializer = PollSerializer(poll)
             return Response(serializer.data, status=status.HTTP_200_OK)
