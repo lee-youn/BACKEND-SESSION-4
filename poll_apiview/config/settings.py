@@ -80,7 +80,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "poll-db",
+        "NAME": "poll_db",
         "USER": 'leeyoun',
         'PASSWORD' : 'dbswjd6654',
         'HOST': 'mutsa-test-db.cvk0w80cgtqt.ap-northeast-2.rds.amazonaws.com',
